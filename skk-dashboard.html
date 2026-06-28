@@ -17,205 +17,187 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:var(--font); background:var(--bg-deep); color:var(--text); line-height:1.5; -webkit-font-smoothing:antialiased; }
 
-/* HEADER */
 header {
   background:var(--bg-card); border-bottom:1px solid var(--border);
-  padding:14px 28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+  padding:12px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
 }
-header h1 { font-size:20px; font-weight:600; letter-spacing:-0.3px; color:#fff; }
-.header-right { font-size:12px; color:var(--text-dim); display:flex; gap:20px; }
+header h1 { font-size:18px; font-weight:600; color:#fff; }
+.header-right { font-size:11px; color:var(--text-dim); display:flex; gap:16px; }
 
-/* FILTER BAR */
-.filter-bar {
-  background:var(--bg-panel); border-bottom:1px solid var(--border);
-  padding:12px 28px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+/* TABS */
+.tab-bar {
+  display:flex; gap:0; background:var(--bg-panel); border-bottom:1px solid var(--border); padding:0 24px;
 }
-.filter-bar label { font-size:12px; color:var(--text-dim); font-weight:500; }
-.filter-bar select, .filter-bar input {
-  background:var(--bg-card); color:var(--text); border:1px solid var(--border);
-  border-radius:5px; padding:7px 10px; font-size:13px; font-family:var(--font);
-  min-width:140px; cursor:pointer;
+.tab {
+  padding:10px 20px; font-size:13px; font-weight:500; color:var(--text-dim); cursor:pointer;
+  border-bottom:2px solid transparent; transition:all 0.15s; background:none; border-top:none; border-left:none; border-right:none;
+  font-family:var(--font);
 }
-.filter-bar select:focus, .filter-bar input:focus { outline:none; border-color:var(--accent); }
-.filter-bar select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238899aa'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; padding-right:28px; }
-.filter-bar input[type=number] { width:70px; text-align:center; }
-.filter-row { display:flex; align-items:center; gap:6px; }
+.tab:hover { color:var(--text); }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.tab .badge {
+  display:inline-block; margin-left:6px; padding:1px 6px; border-radius:8px; font-size:10px;
+  background:var(--bg-card); color:var(--text-dim);
+}
+
+/* FILTER ROW */
+.filter-row {
+  display:flex; align-items:center; gap:10px; padding:10px 24px;
+  background:var(--bg-card); border-bottom:1px solid var(--border); flex-wrap:wrap;
+}
+.filter-row label { font-size:11px; color:var(--text-muted); font-weight:500; }
+.filter-row select, .filter-row input {
+  background:var(--bg-panel); color:var(--text); border:1px solid var(--border);
+  border-radius:5px; padding:6px 10px; font-size:12px; font-family:var(--font);
+  min-width:120px;
+}
+.filter-row select:focus, .filter-row input:focus { outline:none; border-color:var(--accent); }
+.filter-row select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238899aa'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; padding-right:26px; }
+.filter-row input[type=number] { width:65px; text-align:center; }
 .filter-sep { color:var(--text-muted); font-size:11px; }
 .btn {
-  padding:7px 18px; border-radius:5px; border:1px solid var(--accent); background:rgba(79,195,247,0.1);
-  color:var(--accent); font-size:13px; font-weight:500; cursor:pointer; transition:all 0.15s;
-  display:flex; align-items:center; gap:6px;
+  padding:6px 16px; border-radius:5px; border:1px solid var(--accent); background:rgba(79,195,247,0.1);
+  color:var(--accent); font-size:12px; font-weight:500; cursor:pointer; transition:all 0.15s;
+  display:flex; align-items:center; gap:5px; font-family:var(--font);
 }
 .btn:hover { background:rgba(79,195,247,0.2); }
 .btn.loading { opacity:0.6; pointer-events:none; }
-.spinner { display:none; width:14px; height:14px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.6s linear infinite; }
+.btn.green { border-color:var(--positive); color:var(--positive); background:rgba(102,187,106,0.1); }
+.btn.green:hover { background:rgba(102,187,106,0.2); }
+.spinner { display:none; width:12px; height:12px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.6s linear infinite; vertical-align:middle; }
 .spinner.active { display:inline-block; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
 /* KPI */
 .kpi-row {
-  display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));
-  gap:12px; padding:16px 28px;
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+  gap:10px; padding:14px 24px;
 }
-.kpi-card { background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:14px 18px; }
-.kpi-label { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
-.kpi-value { font-size:26px; font-weight:700; letter-spacing:-0.5px; color:#fff; }
-.kpi-unit { font-size:13px; font-weight:400; color:var(--text-dim); margin-left:2px; }
-.kpi-sub { font-size:11px; color:var(--text-dim); margin-top:3px; }
-.kpi-badge { display:inline-block; padding:2px 8px; border-radius:3px; font-size:10px; font-weight:600; margin-top:4px; }
+.kpi-card { background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:12px 16px; }
+.kpi-label { font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
+.kpi-value { font-size:24px; font-weight:700; color:#fff; }
+.kpi-unit { font-size:12px; font-weight:400; color:var(--text-dim); margin-left:2px; }
+.kpi-sub { font-size:11px; color:var(--text-dim); margin-top:2px; }
+.kpi-badge { display:inline-block; padding:2px 7px; border-radius:3px; font-size:10px; font-weight:600; margin-top:3px; }
 .kpi-badge.good { background:rgba(102,187,106,0.15); color:var(--positive); }
 .kpi-badge.warn { background:rgba(255,167,38,0.15); color:var(--warn); }
 .kpi-badge.bad { background:rgba(239,83,80,0.15); color:var(--negative); }
 
 /* DASHBOARD */
-.dashboard { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:0 28px 28px; }
+.dashboard { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 24px 24px; }
 .panel { background:var(--bg-card); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
 .panel.full { grid-column:1/-1; }
-.panel-header { padding:12px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-.panel-title { font-size:14px; font-weight:600; color:#fff; }
+.panel-header { padding:10px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.panel-title { font-size:13px; font-weight:600; color:#fff; }
 .panel-subtitle { font-size:11px; color:var(--text-dim); }
-.panel-body { padding:14px 18px; }
+.panel-body { padding:12px 16px; }
 .panel-body.no-pad { padding:0; }
-.chart-wrap { position:relative; width:100%; height:260px; }
-.chart-wrap.tall { height:360px; }
-.chart-wrap.short { height:200px; }
+.chart-wrap { position:relative; width:100%; height:240px; }
+.chart-wrap.tall { height:340px; }
+.chart-wrap.short { height:180px; }
 
 /* TABLES */
-table { width:100%; border-collapse:collapse; font-size:13px; }
+table { width:100%; border-collapse:collapse; font-size:12px; }
 th {
-  text-align:left; padding:9px 12px; font-size:10px; font-weight:600; color:var(--text-muted);
+  text-align:left; padding:8px 10px; font-size:10px; font-weight:600; color:var(--text-muted);
   text-transform:uppercase; letter-spacing:0.5px; border-bottom:1px solid var(--border);
   background:var(--bg-panel); position:sticky; top:0; z-index:1;
 }
-td { padding:8px 12px; border-bottom:1px solid rgba(42,63,90,0.5); }
+td { padding:7px 10px; border-bottom:1px solid rgba(42,63,90,0.5); }
 tr:hover td { background:var(--bg-hover); }
-.num { text-align:right; font-variant-numeric:tabular-nums; font-family:var(--mono); font-size:12px; }
-.rank { text-align:center; font-weight:600; color:var(--text-dim); width:32px; }
-.badge-status { display:inline-block; padding:2px 7px; border-radius:3px; font-size:10px; font-weight:500; }
+.num { text-align:right; font-variant-numeric:tabular-nums; font-family:var(--mono); font-size:11px; }
+.rank { text-align:center; font-weight:600; color:var(--text-dim); width:28px; }
+.badge-status { display:inline-block; padding:1px 6px; border-radius:3px; font-size:10px; font-weight:500; }
 .badge-status.clean { background:rgba(102,187,106,0.12); color:var(--positive); }
-.table-wrap { max-height:380px; overflow-y:auto; }
+.badge-status.rnu { background:rgba(239,83,80,0.12); color:var(--negative); }
+.table-wrap { max-height:360px; overflow-y:auto; }
+
+/* CLASS BARS */
+.class-bars { display:flex; gap:8px; margin:8px 0; }
+.class-bar-wrap { flex:1; }
+.class-bar-label { font-size:11px; color:var(--text-dim); margin-bottom:4px; display:flex; justify-content:space-between; }
+.class-bar-outer { height:6px; background:var(--bg-panel); border-radius:3px; overflow:hidden; }
+.class-bar-inner { height:100%; border-radius:3px; transition:width 0.3s; }
+.class-bar-inner.a { background:var(--positive); }
+.class-bar-inner.b { background:var(--warn); }
+.class-bar-inner.c { background:var(--negative); }
 
 /* METHODOLOGY */
-.methodology { padding:16px 20px; font-size:12px; color:var(--text-dim); line-height:1.7; }
-.methodology h3 { font-size:13px; font-weight:600; color:#fff; margin:12px 0 4px; }
+.methodology { padding:14px 18px; font-size:11px; color:var(--text-dim); line-height:1.6; }
+.methodology h3 { font-size:12px; font-weight:600; color:#fff; margin:10px 0 3px; }
 .methodology h3:first-child { margin-top:0; }
-.methodology ul { padding-left:16px; margin:3px 0 8px; }
-.methodology li { margin-bottom:2px; }
+.methodology ul { padding-left:14px; margin:2px 0 6px; }
 .tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:10px; background:var(--bg-panel); border:1px solid var(--border); margin-right:3px; margin-bottom:3px; }
+.error-box { background:rgba(239,83,80,0.08); border:1px solid rgba(239,83,80,0.3); border-radius:6px; padding:14px; color:var(--negative); font-size:12px; text-align:center; }
 
-/* ERROR / EMPTY */
-.error-box { background:rgba(239,83,80,0.08); border:1px solid rgba(239,83,80,0.3); border-radius:6px; padding:16px; color:var(--negative); font-size:13px; text-align:center; }
-.empty-box { text-align:center; padding:40px; color:var(--text-muted); font-size:14px; }
-
-@media (max-width:900px) {
-  .dashboard { grid-template-columns:1fr; }
-  .kpi-row { grid-template-columns:repeat(2, 1fr); }
-  .filter-bar { flex-direction:column; align-items:flex-start; }
-}
+@media (max-width:900px) { .dashboard { grid-template-columns:1fr; } .kpi-row { grid-template-columns:repeat(2,1fr); } }
 </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <h1>Мониторинг цен и квалифицированных поставщиков</h1>
-    <div style="font-size:12px;color:var(--text-dim);">Самрук-Казына · Система закупок <span id="hdrProduct" style="color:#fff;">—</span></div>
-  </div>
+  <div><h1>Мониторинг цен ТРУ и пула поставщиков</h1><div style="font-size:11px;color:var(--text-dim);">Самрук-Казына · <span id="hdrProduct" style="color:#fff;">—</span></div></div>
   <div class="header-right">
     <div>Источник: <span>zakup.sk.kz</span></div>
     <div>Обновлено: <span id="hdrUpdated">—</span></div>
-    <div>БД: <span>eoz_full_auth.db</span></div>
+    <a href="/api/report-docx?enstru=192021.530.000001&year_from=2024&year_to=2026" class="btn green" id="btnDownload" target="_blank">📥 Скачать отчёт</a>
   </div>
 </header>
 
+<!-- TABS -->
+<div class="tab-bar" id="tabBar">
+  <button class="tab active" data-tab="summary">📊 Резюме</button>
+  <button class="tab" data-tab="detail">🔍 Детализация</button>
+  <button class="tab" data-tab="suppliers">👥 Поставщики</button>
+</div>
+
 <!-- FILTERS -->
-<div class="filter-bar">
-  <label>Продукт (ЕНС ТРУ)</label>
-  <select id="filterEnstru" style="min-width:300px;"><option value="">Загрузка...</option></select>
+<div class="filter-row" id="filterRow">
+  <label>Продукт</label>
+  <select id="filterEnstru" style="min-width:280px;"><option>Загрузка...</option></select>
   <label>Регион</label>
-  <select id="filterRegion"><option value="">Все регионы</option></select>
+  <select id="filterRegion"><option value="">Все</option></select>
   <label>Годы</label>
-  <div class="filter-row">
-    <input type="number" id="filterYearFrom" value="2024" min="2020" max="2030">
-    <span class="filter-sep">–</span>
-    <input type="number" id="filterYearTo" value="2026" min="2020" max="2030">
-  </div>
-  <button class="btn" onclick="loadDashboard()" id="btnUpdate">
-    <span class="spinner" id="spinner"></span> Обновить
-  </button>
+  <input type="number" id="filterYearFrom" value="2024" min="2020" max="2030">
+  <span class="filter-sep">–</span>
+  <input type="number" id="filterYearTo" value="2026" min="2020" max="2030">
+  <button class="btn" onclick="refresh()" id="btnUpdate"><span class="spinner" id="spinner"></span> Обновить</button>
 </div>
 
-<!-- KPI ROW -->
-<div class="kpi-row" id="kpiRow"></div>
-
-<!-- CHARTS + TABLES -->
-<div class="dashboard">
-  <div class="panel"><div class="panel-header"><div><div class="panel-title">Ценовой коридор: медиана с границами P25–P75</div><div class="panel-subtitle" id="corrSub">Тенге за единицу · исполненные договоры СКК</div></div></div><div class="panel-body"><div class="chart-wrap"><canvas id="chartCorridor"></canvas></div></div></div>
-  <div class="panel"><div class="panel-header"><div><div class="panel-title">Медианная цена по регионам поставки</div><div class="panel-subtitle">Ранжировано · пунктир — национальная медиана</div></div></div><div class="panel-body no-pad"><div class="chart-wrap tall"><canvas id="chartRegions"></canvas></div></div></div>
-  <div class="panel"><div class="panel-header"><div><div class="panel-title">Распределение контрактов по годам</div><div class="panel-subtitle">Количество исполненных договоров</div></div></div><div class="panel-body"><div class="chart-wrap short"><canvas id="chartYears"></canvas></div></div></div>
-  <div class="panel"><div class="panel-header"><div><div class="panel-title">Топ-8 поставщиков по сумме контрактов</div><div class="panel-subtitle">Млрд тенге · совокупно за период</div></div></div><div class="panel-body no-pad"><div class="chart-wrap tall"><canvas id="chartSuppliers"></canvas></div></div></div>
-  <div class="panel full"><div class="panel-header"><div><div class="panel-title">Реестр квалифицированных поставщиков</div><div class="panel-subtitle" id="suppCount">—</div></div></div><div class="panel-body no-pad"><div class="table-wrap" id="supplierTable"></div></div></div>
-  <div class="panel full"><div class="panel-header"><div><div class="panel-title">Последние исполненные контракты</div><div class="panel-subtitle">Последние 30 договоров</div></div></div><div class="panel-body no-pad"><div class="table-wrap" id="contractTable"></div></div></div>
-  <div class="panel full"><div class="panel-header"><div class="panel-title">Методология и примечания</div></div>
-    <div class="methodology">
-      <h3>IBCS SUCCESS — нотация</h3>
-      <ul>
-        <li><span style="color:var(--accent)">■</span> Факт (медиана) · <span style="background:var(--corridor);padding:1px 6px;border-radius:3px;">▨</span> Коридор P25–P75 · <span style="border-bottom:2px dashed var(--reference)">- - -</span> Национальная медиана</li>
-        <li><span style="color:var(--positive)">▲</span> В коридоре · <span style="color:var(--warn)">◆</span> Отклонение >5% от медианы</li>
-      </ul>
-      <h3>Классификация надёжности</h3>
-      <ul>
-        <li><strong>A</strong> — ≥30 позиций, спред &lt;150% · <strong>B</strong> — ≥8 позиций · <strong>C</strong> — &lt;8 позиций (требуется КП)</li>
-      </ul>
-      <h3>Данные</h3>
-      <p>Система закупок Самрук-Казына (zakup.sk.kz) → MS-SQL GS → eoz_full_auth.db. Только исполненные договоры, исключены РНУ-поставщики. Фильтры пересчитывают медианы и коридоры в реальном времени.</p>
-      <div style="margin-top:12px;">
-        <span class="tag">IBCS SUCCESS</span><span class="tag">FastAPI</span><span class="tag">eoz_full_auth.db</span><span class="tag">СКК Pipeline</span>
-        <span class="tag" id="tagEnstru">—</span><span class="tag" id="tagYears">—</span>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- CONTENT AREA -->
+<div id="tabSummary" style="display:block;"></div>
+<div id="tabDetail" style="display:none;"></div>
+<div id="tabSuppliers" style="display:none;"></div>
 
 <script>
-// ===== GLOBAL STATE =====
 const API = window.location.origin + '/api';
-let chartCorridor, chartRegions, chartYears, chartSuppliers;
-let currentData = null;
-let natMedian = 0, natCorrLow = 0, natCorrHigh = 0;
+let chartCache = {};
+let currentTab = 'summary';
+let allProducts = [];
 
-// ===== INIT =====
+// ── INIT ──
 document.addEventListener('DOMContentLoaded', async () => {
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+  document.getElementById('filterEnstru').addEventListener('change', refresh);
+  document.getElementById('filterRegion').addEventListener('change', refresh);
+  document.getElementById('filterYearFrom').addEventListener('change', refresh);
+  document.getElementById('filterYearTo').addEventListener('change', refresh);
   await loadProducts();
-  await loadDashboard();
+  await refresh();
 });
-
-document.getElementById('filterEnstru').addEventListener('change', () => {
-  loadRegions(document.getElementById('filterEnstru').value);
-  loadDashboard();
-});
-document.getElementById('filterRegion').addEventListener('change', loadDashboard);
-document.getElementById('filterYearFrom').addEventListener('change', loadDashboard);
-document.getElementById('filterYearTo').addEventListener('change', loadDashboard);
-
-// ===== API LOADERS =====
 
 async function loadProducts() {
   try {
-    const r = await fetch(`${API}/products`);
-    const products = await r.json();
+    const r = await fetch(`${API}/products?limit=200`);
+    allProducts = await r.json();
     const sel = document.getElementById('filterEnstru');
-    sel.innerHTML = products.map(p =>
-      `<option value="${p.enstru}">${p.enstru} — ${escHtml(p.name).substring(0,60)} (${p.contract_count} контрактов, ${p.tru_type})</option>`
+    sel.innerHTML = allProducts.map(p =>
+      `<option value="${p.enstru}">${p.enstru} — ${escHtml(p.name).substring(0,55)} (${p.contract_count} контрактов)</option>`
     ).join('');
-    // Select gasoline by default
-    const gasIdx = products.findIndex(p => p.enstru === '192021.530.000001');
+    const gasIdx = allProducts.findIndex(p => p.enstru === '192021.530.000001');
     if (gasIdx >= 0) sel.selectedIndex = gasIdx;
     await loadRegions(sel.value);
-  } catch(e) {
-    document.getElementById('filterEnstru').innerHTML = '<option>Ошибка загрузки</option>';
-    console.error('loadProducts:', e);
-  }
+  } catch(e) { console.error(e); }
 }
 
 async function loadRegions(enstru) {
@@ -225,186 +207,230 @@ async function loadRegions(enstru) {
     const sel = document.getElementById('filterRegion');
     sel.innerHTML = '<option value="">Все регионы</option>' +
       regions.map(rg => `<option value="${rg.region_code}">${rg.region_name} (${rg.contract_count})</option>`).join('');
-  } catch(e) { console.error('loadRegions:', e); }
+  } catch(e) {}
 }
 
-async function loadDashboard() {
-  const btn = document.getElementById('btnUpdate');
-  const spinner = document.getElementById('spinner');
-  btn.classList.add('loading');
-  spinner.classList.add('active');
+// ── TAB SWITCHING ──
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.getElementById('tabSummary').style.display = tab === 'summary' ? 'block' : 'none';
+  document.getElementById('tabDetail').style.display = tab === 'detail' ? 'block' : 'none';
+  document.getElementById('tabSuppliers').style.display = tab === 'suppliers' ? 'block' : 'none';
+  // Filter row only for detail tab
+  document.getElementById('filterRow').style.display = tab === 'detail' ? 'flex' : 'none';
+  refresh();
+}
 
+// ── REFRESH ──
+async function refresh() {
+  if (currentTab === 'summary') await loadSummary();
+  else if (currentTab === 'detail') await loadDetail();
+  else if (currentTab === 'suppliers') await loadSuppliers();
+}
+
+// ── SUMMARY TAB ──
+async function loadSummary() {
+  document.getElementById('hdrProduct').textContent = 'Сводка по всем позициям';
+  const yf = document.getElementById('filterYearFrom').value;
+  const yt = document.getElementById('filterYearTo').value;
+
+  try {
+    const r = await fetch(`${API}/summary?year_from=${yf}&year_to=${yt}`);
+    const d = await r.json();
+    const vol = d.total_volume / 1e12;
+    document.getElementById('tabSummary').innerHTML = `
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="kpi-label">Всего позиций</div><div class="kpi-value">${d.total_positions}</div><div class="kpi-sub">с достаточными данными (≥3)</div></div>
+        <div class="kpi-card"><div class="kpi-label">Класс A</div><div class="kpi-value">${d.class_distribution.A || 0}<span class="kpi-unit">надёжно</span></div><div class="kpi-sub">≥30 позиций, спред <150%</div><div class="kpi-badge good">Рекомендовано</div></div>
+        <div class="kpi-card"><div class="kpi-label">Класс B</div><div class="kpi-value">${d.class_distribution.B || 0}<span class="kpi-unit">ограниченно</span></div><div class="kpi-sub">≥8 позиций</div><div class="kpi-badge warn">Ориентир</div></div>
+        <div class="kpi-card"><div class="kpi-label">Класс C</div><div class="kpi-value">${d.class_distribution.C || 0}<span class="kpi-unit">ненадёжно</span></div><div class="kpi-sub">&lt;8 позиций → запрос КП</div><div class="kpi-badge bad">Требует КП</div></div>
+        <div class="kpi-card"><div class="kpi-label">Поставщики</div><div class="kpi-value">${d.qualified_suppliers.toLocaleString('ru')}</div><div class="kpi-sub">Квалифицированных (без РНУ)</div></div>
+        <div class="kpi-card"><div class="kpi-label">Общий объём</div><div class="kpi-value">${vol >= 1 ? vol.toFixed(1) : vol.toFixed(3)}<span class="kpi-unit">трлн ₸</span></div><div class="kpi-sub">${yf}–${yt} гг.</div></div>
+      </div>
+      <div class="dashboard">
+        <div class="panel"><div class="panel-header"><div class="panel-title">Распределение по классам достоверности</div></div><div class="panel-body">
+          <div class="class-bars">
+            <div class="class-bar-wrap"><div class="class-bar-label"><span>Класс A</span><span>${d.class_distribution.A || 0}</span></div><div class="class-bar-outer"><div class="class-bar-inner a" style="width:${(d.class_distribution.A||0)/Math.max(d.total_positions,1)*100}%"></div></div></div>
+            <div class="class-bar-wrap"><div class="class-bar-label"><span>Класс B</span><span>${d.class_distribution.B || 0}</span></div><div class="class-bar-outer"><div class="class-bar-inner b" style="width:${(d.class_distribution.B||0)/Math.max(d.total_positions,1)*100}%"></div></div></div>
+            <div class="class-bar-wrap"><div class="class-bar-label"><span>Класс C</span><span>${d.class_distribution.C || 0}</span></div><div class="class-bar-outer"><div class="class-bar-inner c" style="width:${(d.class_distribution.C||0)/Math.max(d.total_positions,1)*100}%"></div></div></div>
+          </div>
+          ${d.avg_savings_pct > 0 ? `<div style="margin-top:10px;font-size:11px;color:var(--text-dim);">Ориентир экономии на классе A: верхняя граница (P75) превышает медиану в среднем на <b style="color:var(--positive);">~${d.avg_savings_pct}%</b> — потенциал при закупке по медиане.</div>` : ''}
+        </div></div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Топ-10 позиций по объёму</div></div><div class="panel-body no-pad">
+          <div class="table-wrap" style="max-height:280px;">
+            <table><thead><tr><th>№</th><th>ЕНС ТРУ</th><th>Наименование</th><th class="num">Класс</th><th class="num">Медиана, ₸</th><th class="num">Спред</th><th class="num">Сумма, млрд ₸</th></tr></thead><tbody>
+            ${d.positions.sort((a,b)=>(b.total_sum||0)-(a.total_sum||0)).slice(0,10).map((p,i) => `<tr>
+              <td class="rank">${i+1}</td><td style="font-family:var(--mono);font-size:10px;">${p.enstru}</td><td>${escHtml(p.name).substring(0,50)}</td>
+              <td class="num"><span class="badge-status ${p.conf_class.startsWith('A')?'clean':p.conf_class.startsWith('B')?'':'rnu'}">${p.conf_class[0]}</span></td>
+              <td class="num">${p.median_price.toLocaleString('ru')}</td><td class="num">${p.spread_pct}%</td>
+              <td class="num">${((p.total_sum||0)/1e9).toFixed(2)}</td></tr>`).join('')}
+            </tbody></table>
+          </div>
+        </div></div>
+      </div>
+      <div class="methodology" style="margin:0 24px 24px;">
+        <h3>Методология</h3>
+        <p>Рекомендованная цена определяется статистически по исполненным договорам СКК (${yf}–${yt}). Очистка от аномалий (IQR), медиана как точечная оценка, P25–P75 как диапазон.</p>
+        <p>Класс A: ≥30 позиций, спред &lt;150% · Класс B: ≥8 · Класс C: &lt;8 — адресный запрос КП.</p>
+        <div style="margin-top:8px;"><span class="tag">IBCS SUCCESS</span><span class="tag">eoz_full_auth.db</span><span class="tag">${yf}–${yt}</span></div>
+      </div>
+    `;
+  } catch(e) {
+    document.getElementById('tabSummary').innerHTML = `<div class="error-box">Ошибка загрузки сводки: ${e.message}</div>`;
+  }
+}
+
+// ── DETAIL TAB ──
+async function loadDetail() {
   const enstru = document.getElementById('filterEnstru').value;
   const region = document.getElementById('filterRegion').value;
   const yf = document.getElementById('filterYearFrom').value;
   const yt = document.getElementById('filterYearTo').value;
 
+  document.getElementById('btnDownload').href = `${API}/report-docx?enstru=${enstru}&year_from=${yf}&year_to=${yt}`;
+  showLoading('tabDetail');
+
   try {
     const params = new URLSearchParams({ enstru, year_from: yf, year_to: yt });
     if (region) params.set('region', region);
     const r = await fetch(`${API}/dashboard?${params}`);
-    if (!r.ok) {
-      const err = await r.json();
-      showError(`Нет данных для выбранных фильтров. ${err.error || ''} Попробуйте другой продукт или период.`);
-      return;
-    }
-    const data = await r.json();
-    currentData = data;
-    renderAll(data);
+    if (!r.ok) { document.getElementById('tabDetail').innerHTML = `<div class="error-box">Нет данных для выбранных фильтров.</div>`; return; }
+    const d = await r.json();
+    const pr = d.price_reference[0];
+    document.getElementById('hdrProduct').textContent = `${d.product_name} · ${pr.conf_class}`;
+    document.getElementById('hdrUpdated').textContent = new Date().toLocaleDateString('ru');
+
+    const totalB = d.total_volume / 1e9;
+    const regions = d.price_by_region || [];
+    const suppliers = d.supplier_registry || [];
+
+    document.getElementById('tabDetail').innerHTML = `
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="kpi-label">Медианная цена</div><div class="kpi-value">${pr.median_price.toLocaleString('ru')}<span class="kpi-unit">₸/ед</span></div><div class="kpi-sub">P25–P75: ${pr.p25.toLocaleString('ru')} – ${pr.p75.toLocaleString('ru')}</div><div class="kpi-badge ${pr.conf_class.startsWith('A')?'good':pr.conf_class.startsWith('B')?'warn':'bad'}">${pr.conf_class}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Ценовой спред</div><div class="kpi-value">${pr.spread_pct.toFixed(2)}<span class="kpi-unit">%</span></div><div class="kpi-sub">Коридор ±20%: ${pr.corridor_low.toLocaleString('ru')} – ${pr.corridor_high.toLocaleString('ru')}</div><div class="kpi-badge good">${pr.price_basis}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Поставщики</div><div class="kpi-value">${pr.n_suppliers}</div><div class="kpi-sub">Квалифицированных (без РНУ)</div></div>
+        <div class="kpi-card"><div class="kpi-label">Контракты</div><div class="kpi-value">${pr.n_contracts}</div><div class="kpi-sub">Исполненных договоров</div></div>
+        <div class="kpi-card"><div class="kpi-label">Общий объём</div><div class="kpi-value">${totalB>=1?totalB.toFixed(2):totalB.toFixed(3)}<span class="kpi-unit">млрд ₸</span></div><div class="kpi-sub">${d.total_quantity?(d.total_quantity/1e6).toFixed(2)+' млн ед.':''}</div></div>
+        <div class="kpi-card"><div class="kpi-label">Регионы</div><div class="kpi-value">${regions.length}</div><div class="kpi-sub">из 20 регионов РК</div></div>
+      </div>
+      <div class="dashboard">
+        <div class="panel"><div class="panel-header"><div class="panel-title">Ценовой коридор: медиана с границами P25–P75</div></div><div class="panel-body"><div class="chart-wrap"><canvas id="chartCorridor"></canvas></div></div></div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Медианная цена по регионам</div></div><div class="panel-body no-pad"><div class="chart-wrap tall"><canvas id="chartRegions"></canvas></div></div></div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Контракты по годам</div></div><div class="panel-body"><div class="chart-wrap short"><canvas id="chartYears"></canvas></div></div></div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Топ-8 поставщиков по сумме</div></div><div class="panel-body no-pad"><div class="chart-wrap tall"><canvas id="chartSuppliers"></canvas></div></div></div>
+        <div class="panel full"><div class="panel-header"><div class="panel-title">Последние контракты</div></div><div class="panel-body no-pad"><div class="table-wrap">${buildContractTable(d.contracts||[])}</div></div></div>
+      </div>
+    `;
+
+    // Draw charts
+    setTimeout(() => drawCharts(pr, regions, suppliers, d), 100);
   } catch(e) {
-    showError(`Ошибка соединения с API. Проверьте, что сервер запущен на порту ${window.location.port}. Команда: cd ~/Projects/eoz && python3.11 -m uvicorn skk_api:app --host 0.0.0.0 --port ${window.location.port}`);
-    console.error(e);
-  } finally {
-    btn.classList.remove('loading');
-    spinner.classList.remove('active');
+    document.getElementById('tabDetail').innerHTML = `<div class="error-box">Ошибка: ${e.message}. Проверьте сервер.</div>`;
   }
 }
 
-// ===== RENDER =====
+function drawCharts(pr, regions, suppliers, d) {
+  // Corridor
+  const ctx1 = document.getElementById('chartCorridor');
+  if (ctx1) new Chart(ctx1, {
+    type:'bar', data:{labels:[`Медиана · ${pr.name.substring(0,35)}`], datasets:[
+      {label:'Коридор P25–P75',data:[[pr.corridor_low,pr.corridor_high]],backgroundColor:'rgba(79,195,247,0.15)',borderColor:'rgba(79,195,247,0.3)',borderWidth:1,borderRadius:4,barPercentage:0.6},
+      {label:'Медиана',data:[pr.median_price],backgroundColor:'#4fc3f7',borderRadius:4,barPercentage:0.15}
+    ]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      scales:{x:{min:pr.corridor_low*0.85,max:pr.corridor_high*1.15,ticks:{callback:v=>v.toLocaleString('ru')+' ₸'}},y:{display:false}},
+      plugins:{tooltip:{callbacks:{label:ctx=>ctx.datasetIndex===0?`Коридор: ${pr.corridor_low}–${pr.corridor_high} ₸`:`Медиана: ${pr.median_price} ₸`}}}}
+  });
 
-function showError(msg) {
-  document.getElementById('kpiRow').innerHTML = `<div class="error-box" style="grid-column:1/-1;">${msg}</div>`;
-  document.getElementById('supplierTable').innerHTML = '';
-  document.getElementById('contractTable').innerHTML = '';
-  document.getElementById('hdrProduct').textContent = '—';
+  // Regions
+  regions.sort((a,b)=>b.median_price-a.median_price);
+  const ctx2 = document.getElementById('chartRegions');
+  if (ctx2) new Chart(ctx2, {
+    type:'bar', data:{labels:regions.map(r=>r.region), datasets:[{
+      data:regions.map(r=>r.median_price),
+      backgroundColor:ctx=>{const v=ctx.raw;if(Math.abs(v-pr.median_price)<0.1)return'#4fc3f7';if(v>pr.median_price*1.05)return'#ffa726';return'#5c7fa0'},
+      borderRadius:4,barPercentage:0.7
+    }]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      scales:{x:{ticks:{callback:v=>v.toLocaleString('ru')+' ₸'}},y:{ticks:{font:{size:11}}}},
+      plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.raw.toFixed(2)} ₸ · ${regions[ctx.dataIndex].n_items} поз.`}}}}
+  });
+
+  // Years
+  const yd=d.year_distribution||[]; const ym={}; yd.forEach(y=>ym[y.year]=y.count);
+  const years=[]; for(let y=d.filters.year_from;y<=d.filters.year_to;y++) years.push(y);
+  const ctx3 = document.getElementById('chartYears');
+  if (ctx3) new Chart(ctx3, {
+    type:'bar', data:{labels:years.map(String), datasets:[{data:years.map(y=>ym[y]||0),backgroundColor:['#5c7fa0','#4fc3f7','#2a4a6a'],borderRadius:4,barPercentage:0.7}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{callback:v=>v+' ед.'}}}}
+  });
+
+  // Suppliers
+  const top8 = suppliers.slice(0,8);
+  const ctx4 = document.getElementById('chartSuppliers');
+  if (ctx4) new Chart(ctx4, {
+    type:'bar', data:{labels:top8.map(s=>s.supplier_name), datasets:[{data:top8.map(s=>s.total_sum/1e9),backgroundColor:ctx=>ctx.dataIndex===0?'#4fc3f7':'#5c7fa0',borderRadius:4,barPercentage:0.7}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      scales:{x:{ticks:{callback:v=>(v>=1?v.toFixed(1):v.toFixed(3))+' млрд ₸'}},y:{ticks:{font:{size:11},callback:v=>v.length>35?v.substring(0,33)+'…':v}}}}
+  });
 }
 
-function renderAll(d) {
-  const pr = d.price_reference[0];
-  if (!pr) { showError('Нет данных о ценах'); return; }
+// ── SUPPLIERS TAB ──
+async function loadSuppliers() {
+  document.getElementById('hdrProduct').textContent = 'Реестр поставщиков';
+  const yf = document.getElementById('filterYearFrom').value;
+  const yt = document.getElementById('filterYearTo').value;
 
-  natMedian = pr.median_price;
-  natCorrLow = pr.corridor_low;
-  natCorrHigh = pr.corridor_high;
-
-  // Header
-  document.getElementById('hdrProduct').textContent = `${d.product_name} (${pr.enstru}) · ${pr.conf_class}`;
-  document.getElementById('hdrUpdated').textContent = new Date().toLocaleDateString('ru');
-  document.getElementById('corrSub').textContent = `${pr.tru_type} · ${pr.n_items} позиций, ${pr.n_suppliers} поставщиков`;
-  document.getElementById('tagEnstru').textContent = pr.enstru;
-  document.getElementById('tagYears').textContent = `${d.filters.year_from}–${d.filters.year_to}`;
-
-  // KPI
-  const totalB = (d.total_volume / 1e9);
-  document.getElementById('kpiRow').innerHTML = `
-    <div class="kpi-card"><div class="kpi-label">Медианная цена</div><div class="kpi-value">${pr.median_price.toLocaleString('ru')}<span class="kpi-unit">₸/ед</span></div><div class="kpi-sub">P25–P75: ${pr.p25.toLocaleString('ru')} – ${pr.p75.toLocaleString('ru')}</div><div class="kpi-badge ${pr.conf_class.startsWith('A') ? 'good' : pr.conf_class.startsWith('B') ? 'warn' : 'bad'}">${pr.conf_class}</div></div>
-    <div class="kpi-card"><div class="kpi-label">Ценовой спред</div><div class="kpi-value">${pr.spread_pct.toFixed(2)}<span class="kpi-unit">%</span></div><div class="kpi-sub">Коридор ±20%: ${pr.corridor_low.toLocaleString('ru')} – ${pr.corridor_high.toLocaleString('ru')}</div><div class="kpi-badge good">${pr.price_basis}</div></div>
-    <div class="kpi-card"><div class="kpi-label">Поставщики</div><div class="kpi-value">${pr.n_suppliers}</div><div class="kpi-sub">Квалифицированных (без РНУ)</div></div>
-    <div class="kpi-card"><div class="kpi-label">Контракты</div><div class="kpi-value">${pr.n_contracts}</div><div class="kpi-sub">Исполненных договоров</div></div>
-    <div class="kpi-card"><div class="kpi-label">Общий объём</div><div class="kpi-value">${totalB >= 1 ? totalB.toFixed(2) : totalB.toFixed(3)}<span class="kpi-unit">млрд ₸</span></div><div class="kpi-sub">${d.total_quantity ? (d.total_quantity / 1e6).toFixed(2) + ' млн ед.' : ''}</div></div>
-    <div class="kpi-card"><div class="kpi-label">Регионы поставок</div><div class="kpi-value">${d.price_by_region.length}</div><div class="kpi-sub">из 20 регионов РК</div></div>
-  `;
-
-  // Chart 1: Price Corridor
-  if (chartCorridor) chartCorridor.destroy();
-  chartCorridor = new Chart(document.getElementById('chartCorridor'), {
-    type: 'bar',
-    data: {
-      labels: [`Медианная цена · ${pr.name.substring(0,40)}`],
-      datasets: [{
-        label: 'Коридор P25–P75', data: [[pr.corridor_low, pr.corridor_high]],
-        backgroundColor: 'rgba(79,195,247,0.15)', borderColor: 'rgba(79,195,247,0.3)', borderWidth: 1,
-        borderRadius: 4, barPercentage: 0.6,
-      }, {
-        label: 'Медиана', data: [pr.median_price],
-        backgroundColor: '#4fc3f7', borderRadius: 4, barPercentage: 0.15,
-      }]
-    },
-    options: {
-      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      scales: {
-        x: { min: pr.corridor_low * 0.85, max: pr.corridor_high * 1.15, ticks: { callback: v => v.toLocaleString('ru') + ' ₸' }, grid: { drawTicks: true, tickColor: 'rgba(42,63,90,0.3)' } },
-        y: { display: false }
-      },
-      plugins: {
-        tooltip: { callbacks: { label: ctx => ctx.datasetIndex === 0 ? `Коридор: ${pr.corridor_low} – ${pr.corridor_high} ₸` : `Медиана: ${pr.median_price} ₸` } }
-      }
-    }
-  });
-
-  // Chart 2: Regional Comparison
-  const regions = [...(d.price_by_region || [])].sort((a,b) => b.median_price - a.median_price);
-  if (chartRegions) chartRegions.destroy();
-  chartRegions = new Chart(document.getElementById('chartRegions'), {
-    type: 'bar',
-    data: {
-      labels: regions.map(r => r.region),
-      datasets: [{
-        label: 'Медианная цена', data: regions.map(r => r.median_price),
-        backgroundColor: ctx => { const v = ctx.raw; if (Math.abs(v - natMedian) < 0.1) return '#4fc3f7'; if (v > natMedian * 1.05) return '#ffa726'; return '#5c7fa0'; },
-        borderRadius: 4, barPercentage: 0.7,
-      }]
-    },
-    options: {
-      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      scales: { x: { ticks: { callback: v => v.toLocaleString('ru') + ' ₸' }, grid: { drawTicks: true } }, y: { ticks: { font: { size: 11 } } } },
-      plugins: { tooltip: { callbacks: { label: ctx => { const r = regions[ctx.dataIndex]; const diff = (r.median_price - natMedian).toFixed(2); return `${r.median_price.toFixed(2)} ₸ (${diff > 0 ? '+' : ''}${diff}) · ${r.n_items} поз.`; } } } },
-      animation: { onComplete: drawNatMedianRef }
-    }
-  });
-
-  // Chart 3: Year Distribution
-  const yd = d.year_distribution || [];
-  const yearMap = {}; yd.forEach(y => yearMap[y.year] = y.count);
-  const years = []; for (let y = d.filters.year_from; y <= d.filters.year_to; y++) years.push(y);
-  if (chartYears) chartYears.destroy();
-  chartYears = new Chart(document.getElementById('chartYears'), {
-    type: 'bar',
-    data: { labels: years.map(String), datasets: [{ data: years.map(y => yearMap[y] || 0), backgroundColor: ['#5c7fa0','#4fc3f7','#2a4a6a'], borderRadius: 4, barPercentage: 0.7 }] },
-    options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { stepSize: Math.ceil(Math.max(...years.map(y => yearMap[y]||0), 10) / 8), callback: v => v + ' ед.' }, grid: { drawTicks: true } } }, plugins: { tooltip: { callbacks: { label: ctx => `${ctx.raw} исполненных договоров (${ctx.label} г.)` } } } }
-  });
-
-  // Chart 4: Top Suppliers
-  const topSuppliers = (d.supplier_registry || []).slice(0, 8);
-  if (chartSuppliers) chartSuppliers.destroy();
-  chartSuppliers = new Chart(document.getElementById('chartSuppliers'), {
-    type: 'bar',
-    data: { labels: topSuppliers.map(s => s.supplier_name), datasets: [{ data: topSuppliers.map(s => s.total_sum / 1e9), backgroundColor: ctx => ctx.dataIndex === 0 ? '#4fc3f7' : '#5c7fa0', borderRadius: 4, barPercentage: 0.7 }] },
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, scales: { x: { ticks: { callback: v => (v >= 1 ? v.toFixed(1) : v.toFixed(3)) + ' млрд ₸' }, grid: { drawTicks: true } }, y: { ticks: { font: { size: 11 }, callback: v => v.length > 35 ? v.substring(0,33) + '…' : v } } }, plugins: { tooltip: { callbacks: { label: ctx => `${ctx.raw.toFixed(2)} млрд ₸ · ${topSuppliers[ctx.dataIndex].n_contracts} контрактов` } } } }
-  });
-
-  // Supplier Table
-  document.getElementById('suppCount').textContent = `${d.supplier_registry.length} поставщиков · ранжировано по сумме`;
-  const suppliers = [...d.supplier_registry].sort((a,b) => b.total_sum - a.total_sum);
-  let sh = '<table><thead><tr><th>№</th><th>Поставщик</th><th>Регион</th><th class="num">Контрактов</th><th class="num">Сумма, млрд ₸</th><th>Годы</th><th>Регионы поставок</th></tr></thead><tbody>';
-  suppliers.forEach((s, i) => {
-    const sumB = s.total_sum / 1e9;
-    sh += `<tr><td class="rank">${i+1}</td><td><strong>${escHtml(s.supplier_name)}</strong></td><td>${escHtml(s.legal_region)}</td><td class="num">${s.n_contracts.toLocaleString('ru')}</td><td class="num">${sumB >= 1 ? sumB.toFixed(2) : sumB.toFixed(4)}</td><td>${escHtml(s.years_active)}</td><td>${escHtml(s.delivery_regions || '—')}</td></tr>`;
-  });
-  sh += '</tbody></table>';
-  document.getElementById('supplierTable').innerHTML = sh;
-
-  // Contract Table
-  const contracts = d.contracts || [];
-  let ch = '<table><thead><tr><th>ID контракта</th><th>Поставщик</th><th>Год</th><th>Регион</th><th class="num">Кол-во</th><th class="num">Сумма, ₸</th><th class="num">Цена/ед, ₸</th><th>Статус</th></tr></thead><tbody>';
-  contracts.forEach(c => {
-    ch += `<tr><td style="font-family:var(--mono);font-size:11px;">${c.id}</td><td>${escHtml(c.provider)}</td><td>${c.year}</td><td>${escHtml(c.region)}</td><td class="num">${(c.qty||0).toLocaleString('ru')}</td><td class="num">${(c.amt||0).toLocaleString('ru')}</td><td class="num">${(c.unit_price||0).toFixed(2)}</td><td><span class="badge-status clean">${c.status === 'EXECUTED' ? 'Исполнен' : c.status}</span></td></tr>`;
-  });
-  ch += '</tbody></table>';
-  document.getElementById('contractTable').innerHTML = ch;
+  try {
+    const r = await fetch(`${API}/summary?year_from=${yf}&year_to=${yt}`);
+    const d = await r.json();
+    const allSuppliers = [];
+    const seen = new Set();
+    d.positions.forEach(p => { if (!seen.has(p.enstru)) { seen.add(p.enstru); } });
+    document.getElementById('tabSuppliers').innerHTML = `
+      <div class="kpi-row">
+        <div class="kpi-card"><div class="kpi-label">Всего поставщиков</div><div class="kpi-value">${d.total_suppliers.toLocaleString('ru')}</div><div class="kpi-sub">С подтверждённым опытом СКК</div></div>
+        <div class="kpi-card"><div class="kpi-label">Квалифицированных</div><div class="kpi-value">${d.qualified_suppliers.toLocaleString('ru')}</div><div class="kpi-sub">Без признаков РНУ</div><div class="kpi-badge good">Рекомендованы</div></div>
+        <div class="kpi-card"><div class="kpi-label">В РНУ</div><div class="kpi-value">${d.rnu_suppliers.toLocaleString('ru')}</div><div class="kpi-sub">Подлежат исключению</div><div class="kpi-badge bad">Исключены</div></div>
+        <div class="kpi-card"><div class="kpi-label">Позиций ТРУ</div><div class="kpi-value">${d.total_positions}</div><div class="kpi-sub">С достаточными данными</div></div>
+      </div>
+      <div style="padding:0 24px 24px;">
+        <div class="panel"><div class="panel-header"><div class="panel-title">Топ-30 поставщиков по количеству контрактов (выберите продукт для детализации)</div></div><div class="panel-body no-pad">
+          <div class="table-wrap" style="max-height:500px;">
+            ${buildSupplierSummaryTable(d.positions)}
+          </div>
+        </div></div>
+      </div>
+    `;
+  } catch(e) {
+    document.getElementById('tabSuppliers').innerHTML = `<div class="error-box">Ошибка: ${e.message}</div>`;
+  }
 }
 
-// ===== NAT MEDIAN REFERENCE LINE =====
-function drawNatMedianRef() {
-  const chart = chartRegions;
-  if (!chart || !natMedian) return;
-  const ctx = chart.ctx;
-  const xScale = chart.scales.x;
-  const yScale = chart.scales.y;
-  const x = xScale.getPixelForValue(natMedian);
-  ctx.save();
-  ctx.beginPath();
-  ctx.setLineDash([6,4]);
-  ctx.strokeStyle = '#4a5c72';
-  ctx.lineWidth = 1.5;
-  ctx.moveTo(x, yScale.top);
-  ctx.lineTo(x, yScale.bottom);
-  ctx.stroke();
-  ctx.fillStyle = '#4a5c72';
-  ctx.font = '11px Inter, system-ui, sans-serif';
-  const label = natMedian.toLocaleString('ru') + ' ₸';
-  ctx.fillText(label, x + 4, yScale.top + 14);
-  ctx.restore();
+// ── TABLE BUILDERS ──
+function buildContractTable(contracts) {
+  if (!contracts.length) return '<div style="padding:20px;text-align:center;color:var(--text-muted);">Нет контрактов</div>';
+  return `<table><thead><tr><th>ID</th><th>Поставщик</th><th>Год</th><th>Регион</th><th class="num">Кол-во</th><th class="num">Сумма, ₸</th><th class="num">Цена/ед</th><th>Статус</th></tr></thead><tbody>
+    ${contracts.map(c=>`<tr><td style="font-family:var(--mono);font-size:10px;">${c.id}</td><td>${escHtml(c.provider)}</td><td>${c.year}</td><td>${escHtml(c.region)}</td><td class="num">${(c.qty||0).toLocaleString('ru')}</td><td class="num">${(c.amt||0).toLocaleString('ru')}</td><td class="num">${(c.unit_price||0).toFixed(2)}</td><td><span class="badge-status clean">${c.status==='EXECUTED'?'Исполнен':c.status}</span></td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+function buildSupplierSummaryTable(positions) {
+  // Aggregate supplier info from positions
+  const byProduct = {};
+  positions.forEach(p => {
+    if (!byProduct[p.enstru]) byProduct[p.enstru] = {enstru:p.enstru, name:p.name, count:0, suppliers:p.n_suppliers, total_sum:p.total_sum||0, conf:p.conf_class};
+    else { byProduct[p.enstru].count++; byProduct[p.enstru].total_sum += p.total_sum||0; }
+  });
+  const rows = Object.values(byProduct).sort((a,b)=>b.suppliers-a.suppliers).slice(0,30);
+  return `<table><thead><tr><th>№</th><th>ЕНС ТРУ</th><th>Наименование</th><th class="num">Поставщиков</th><th class="num">Класс</th><th class="num">Объём, млрд ₸</th></tr></thead><tbody>
+    ${rows.map((r,i)=>`<tr><td class="rank">${i+1}</td><td style="font-family:var(--mono);font-size:10px;">${r.enstru}</td><td>${escHtml(r.name).substring(0,55)}</td><td class="num">${r.suppliers.toLocaleString('ru')}</td><td class="num"><span class="badge-status ${r.conf.startsWith('A')?'clean':r.conf.startsWith('B')?'':'rnu'}">${r.conf[0]}</span></td><td class="num">${(r.total_sum/1e9).toFixed(2)}</td></tr>`).join('')}
+  </tbody></table>`;
+}
+
+function showLoading(id) {
+  document.getElementById(id).innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);"><span class="spinner active"></span> Загрузка...</div>';
 }
 
 function escHtml(s) {
