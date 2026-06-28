@@ -1,0 +1,4 @@
+kortix_version = 1
+
+[project]
+name = "kortix-test"
