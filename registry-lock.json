@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "items": {
+    "customer-research": {
+      "type": "registry:skill",
+      "source": "kortix-starter",
+      "sourceType": "local",
+      "files": [
+        {
+          "target": ".kortix/opencode/skills/customer-research/SKILL.md",
+          "hash": "55c60285df9b48a1a14afc953cabd1755fefe63789322176529c85c644446fca"
+        }
+      ],
+      "installedAt": "2026-06-28T02:22:11.248Z"
+    }
+  }
+}
