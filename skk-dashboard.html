@@ -179,7 +179,7 @@ tr:hover td { background:var(--bg-hover); }
 
 <script>
 // ===== GLOBAL STATE =====
-const API = 'http://localhost:8100/api';
+const API = window.location.origin + '/api';
 let chartCorridor, chartRegions, chartYears, chartSuppliers;
 let currentData = null;
 let natMedian = 0, natCorrLow = 0, natCorrHigh = 0;
@@ -252,7 +252,7 @@ async function loadDashboard() {
     currentData = data;
     renderAll(data);
   } catch(e) {
-    showError(`Ошибка соединения с API (${API}/dashboard). Запустите сервер: python3.11 skk_api.py`);
+    showError(`Ошибка соединения с API. Проверьте, что сервер запущен на порту ${window.location.port}. Команда: cd ~/Projects/eoz && python3.11 -m uvicorn skk_api:app --host 0.0.0.0 --port ${window.location.port}`);
     console.error(e);
   } finally {
     btn.classList.remove('loading');
