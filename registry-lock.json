@@ -12,6 +12,18 @@
         }
       ],
       "installedAt": "2026-06-28T02:22:11.248Z"
+    },
+    "agent-browser": {
+      "type": "registry:skill",
+      "source": "kortix-starter",
+      "sourceType": "local",
+      "files": [
+        {
+          "target": ".kortix/opencode/skills/agent-browser/SKILL.md",
+          "hash": "8690a5b5256ff342bacfb93a17bd5fbce6b959858538d1382430a120e9acc56f"
+        }
+      ],
+      "installedAt": "2026-06-28T02:22:59.304Z"
     }
   }
 }
