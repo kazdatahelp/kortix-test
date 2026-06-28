@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>СКК · Мониторинг цен и поставщиков | Бензин АИ-92</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg-deep:    #0f1724;
+  --bg-card:    #182233;
+  --bg-panel:   #1e2d44;
+  --bg-hover:   #263854;
+  --border:     #2a3f5a;
+  --text:       #e2e8f0;
+  --text-dim:   #8899aa;
+  --text-muted: #5a6d80;
+  --accent:     #4fc3f7;
+  --positive:   #66bb6a;
+  --negative:   #ef5350;
+  --warn:       #ffa726;
+  --reference:  #4a5c72;
+  --bar-actual: #4fc3f7;
+  --bar-other:  #5c7fa0;
+  --corridor:   rgba(79,195,247,0.12);
+  --font:       'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --mono:       'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font);
+  background: var(--bg-deep);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+/* HEADER */
+header {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.header-left h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: #fff;
+}
+.header-left .subtitle {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.header-right {
+  display: flex;
+  gap: 28px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.header-right span { color: var(--text); font-weight: 500; }
+
+/* KPI ROW */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  padding: 20px 28px;
+}
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 20px;
+}
+.kpi-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+.kpi-unit {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-dim);
+  margin-left: 2px;
+}
+.kpi-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+.kpi-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.kpi-badge.good { background: rgba(102,187,106,0.15); color: var(--positive); }
+.kpi-badge.warn { background: rgba(255,167,38,0.15); color: var(--warn); }
+
+/* DASHBOARD GRID */
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 0 28px 28px;
+}
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.panel.full { grid-column: 1 / -1; }
+.panel-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+.panel-subtitle {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.panel-body { padding: 16px 20px; }
+.panel-body.no-pad { padding: 0; }
+
+/* CHARTS */
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
+.chart-wrap.tall { height: 380px; }
+.chart-wrap.short { height: 220px; }
+
+/* TABLES */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-panel);
+  position: sticky;
+  top: 0;
+}
+td {
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(42,63,90,0.5);
+  color: var(--text);
+}
+tr:hover td { background: var(--bg-hover); }
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.rank {
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-dim);
+  width: 36px;
+}
+.badge-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.badge-status.clean { background: rgba(102,187,106,0.12); color: var(--positive); }
+.badge-status.rnu { background: rgba(239,83,80,0.12); color: var(--negative); }
+.table-wrap {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* METHODOLOGY */
+.methodology {
+  padding: 20px;
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+.methodology h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  margin: 14px 0 6px;
+}
+.methodology h3:first-child { margin-top: 0; }
+.methodology ul {
+  padding-left: 18px;
+  margin: 4px 0 10px;
+}
+.methodology li { margin-bottom: 3px; }
+.tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .dashboard { grid-template-columns: 1fr; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* TOOLTIP OVERRIDE */
+.chartjs-tooltip {
+  background: var(--bg-panel) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  color: #fff !important;
+  font-family: var(--font) !important;
+  font-size: 12px !important;
+  padding: 8px 12px !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Мониторинг цен и квалифицированных поставщиков</h1>
+    <div class="subtitle">Самрук-Казына · Бензин для двигателей с искровым зажиганием (ЕНС 192021.530.000001)</div>
+  </div>
+  <div class="header-right">
+    <div>Данные: <span>2024–2026</span></div>
+    <div>Обновлено: <span>28.06.2026</span></div>
+    <div>Источник: <span>zakup.sk.kz</span></div>
+  </div>
+</header>
+
+<!-- KPI ROW -->
+<div class="kpi-row">
+  <div class="kpi-card">
+    <div class="kpi-label">Медианная цена</div>
+    <div class="kpi-value">183,03<span class="kpi-unit">₸/л</span></div>
+    <div class="kpi-sub">P25–P75: 183,02 – 183,03</div>
+    <div class="kpi-badge good">Класс А (надёжно)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Ценовой спред</div>
+    <div class="kpi-value">0,01<span class="kpi-unit">%</span></div>
+    <div class="kpi-sub">Высокая однородность цен</div>
+    <div class="kpi-badge good">Национальный базис</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Поставщики</div>
+    <div class="kpi-value">8</div>
+    <div class="kpi-sub">Квалифицированных (без РНУ)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Контракты</div>
+    <div class="kpi-value">51</div>
+    <div class="kpi-sub">Исполненных договоров</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Общий объём</div>
+    <div class="kpi-value">968,2<span class="kpi-unit">млн ₸</span></div>
+    <div class="kpi-sub">5,14 млн литров</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Регионы поставок</div>
+    <div class="kpi-value">12</div>
+    <div class="kpi-sub">из 20 регионов РК</div>
+  </div>
+</div>
+
+<!-- CHARTS + TABLES -->
+<div class="dashboard">
+
+  <!-- Chart 1: Price Corridor -->
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">Ценовой коридор: медиана с границами P25–P75</div>
+        <div class="panel-subtitle">Тенге за литр · бензин АИ-92 · исполненные договоры СКК</div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="chart-wrap">
+        <canvas id="chartCorridor"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart 2: Regional Comparison -->
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">Медианная цена по регионам поставки</div>
+        <div class="panel-subtitle">Ранжировано от высокой к низкой · пунктир — национальная медиана</div>
+      </div>
+    </div>
+    <div class="panel-body no-pad">
+      <div class="chart-wrap tall">
+        <canvas id="chartRegions"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart 3: Contracts by Year -->
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">Распределение контрактов по годам</div>
+        <div class="panel-subtitle">Количество исполненных договоров · 2024–2026</div>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="chart-wrap short">
+        <canvas id="chartYears"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart 4: Supplier Volume -->
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">Топ-8 поставщиков по сумме контрактов</div>
+        <div class="panel-subtitle">Млрд тенге · совокупно за 2024–2026</div>
+      </div>
+    </div>
+    <div class="panel-body no-pad">
+      <div class="chart-wrap tall">
+        <canvas id="chartSuppliers"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table: Supplier Registry -->
+  <div class="panel full">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">Реестр квалифицированных поставщиков</div>
+        <div class="panel-subtitle">48 поставщиков · исключены РНУ · ранжировано по сумме контрактов</div>
+      </div>
+    </div>
+    <div class="panel-body no-pad">
+      <div class="table-wrap" id="supplierTable"></div>
+    </div>
+  </div>
+
+  <!-- Table: Recent Contracts -->
+  <div class="panel full">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">Последние исполненные контракты</div>
+        <div class="panel-subtitle">Последние 20 договоров · цена за единицу · регион поставки</div>
+      </div>
+    </div>
+    <div class="panel-body no-pad">
+      <div class="table-wrap" id="contractTable"></div>
+    </div>
+  </div>
+
+  <!-- Methodology -->
+  <div class="panel full">
+    <div class="panel-header">
+      <div class="panel-title">Методология и примечания</div>
+    </div>
+    <div class="methodology">
+      <h3>Источник данных</h3>
+      <p>Система закупок Самрук-Казына (zakup.sk.kz). Данные выгружены через MS-SQL → SQLite (eoz_full_auth.db), pipeline: intake → filter → prices → pool → report. Период: 2024–2026, только исполненные договоры (EXECUTED), исключены поставщики с признаками РНУ.</p>
+
+      <h3>Классификация надёжности (IBCS SUCCESS)</h3>
+      <ul>
+        <li><strong>Класс А (надёжно)</strong> — ≥30 позиций, спред цен &lt;150%. Применима единая медиана.</li>
+        <li><strong>Класс B (ограниченно)</strong> — ≥8 позиций. Медиана как ориентир.</li>
+        <li><strong>Класс C (ненадёжно)</strong> — &lt;8 позиций. Требуется спецификация или КП.</li>
+      </ul>
+
+      <h3>Обозначения на графиках (IBCS UNIFY)</h3>
+      <ul>
+        <li><span style="color:var(--bar-actual)">■</span> Фактические значения (медиана) — синий</li>
+        <li><span style="background:var(--corridor);padding:1px 6px;border-radius:3px;">▨</span> Коридор P25–P75 — заливка</li>
+        <li><span style="border-bottom:2px dashed var(--reference)">- - -</span> Национальная медиана (референс) — пунктир</li>
+        <li><span style="color:var(--positive)">▲</span> В рамках коридора · <span style="color:var(--warn)">◆</span> Вне коридора</li>
+      </ul>
+
+      <h3>Ограничения</h3>
+      <ul>
+        <li>Данные ограничены одним продуктом (бензин АИ-92). Для других ТРУ необходима замена ЕНС.</li>
+        <li>География поставок — только регионы, где есть исполненные контракты СКК.</li>
+        <li>РНУ-фильтр основан на реестре недобросовестных участников закупок СК.</li>
+      </ul>
+
+      <div style="margin-top:16px;">
+        <span class="tag">IBCS SUCCESS</span>
+        <span class="tag">СКК Pipeline v2</span>
+        <span class="tag">eoz_full_auth.db</span>
+        <span class="tag">ЕНС 192021.530.000001</span>
+        <span class="tag">2024–2026</span>
+        <span class="tag">Казахстан</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- EMBEDDED DATA -->
+<script>
+// Data injected from Parquet files (2026-06-28 pipeline run)
+const DATA = {
+  price_reference: [{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","tru_type":"товар","n_items":158,"n_suppliers":8,"n_contracts":51,"median_price":183.03,"mode_price":183.0,"p25":183.02,"p75":183.03,"spread_pct":0.0055,"conf_class":"A (надёжно)","unit_code":"112","corridor_low":146.42,"corridor_high":219.64,"national_share":1.0,"regional_share":0.994872,"price_basis":"национальный","needs_segmentation":false}],
+  price_by_region: [{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"Костанайская область","n_items":39,"median_price":187.9,"p25":183.03,"p75":191.65,"corridor_low":150.32,"corridor_high":225.48,"in_corridor_share":1.0},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"г.Алматы","n_items":36,"median_price":183.03,"p25":182.25,"p75":183.03,"corridor_low":146.42,"corridor_high":219.64,"in_corridor_share":1.0},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"г.Астана","n_items":25,"median_price":212.0,"p25":212.0,"p75":212.0,"corridor_low":169.6,"corridor_high":254.4,"in_corridor_share":0.96},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"Кызылординская область","n_items":14,"median_price":183.03,"p25":183.03,"p75":183.03,"corridor_low":146.42,"corridor_high":219.64,"in_corridor_share":1.0},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"Актюбинская область","n_items":13,"median_price":185.17,"p25":183.03,"p75":187.31,"corridor_low":148.14,"corridor_high":222.2,"in_corridor_share":1.0},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"Алматинская область","n_items":13,"median_price":183.03,"p25":183.02,"p75":183.03,"corridor_low":146.42,"corridor_high":219.64,"in_corridor_share":1.0},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"Восточно-Казахстанская область","n_items":12,"median_price":183.02,"p25":183.02,"p75":183.02,"corridor_low":146.42,"corridor_high":219.62,"in_corridor_share":1.0},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"Атырауская область","n_items":9,"median_price":183.03,"p25":183.03,"p75":183.03,"corridor_low":146.42,"corridor_high":219.64,"in_corridor_share":1.0},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"область Жетісу","n_items":9,"median_price":183.02,"p25":183.02,"p75":183.03,"corridor_low":146.42,"corridor_high":219.62,"in_corridor_share":1.0},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"Мангистауская область","n_items":9,"median_price":183.03,"p25":183.03,"p75":183.03,"corridor_low":146.42,"corridor_high":219.64,"in_corridor_share":1.0},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"Туркестанская область","n_items":8,"median_price":183.03,"p25":183.03,"p75":183.03,"corridor_low":146.42,"corridor_high":219.64,"in_corridor_share":1.0},{"enstru":"192021.530.000001","name":"Бензин для двигателей с искровым зажиганием","region":"область Абай","n_items":8,"median_price":189.06,"p25":183.03,"p75":189.06,"corridor_low":151.25,"corridor_high":226.87,"in_corridor_share":1.0}]
+};
+
+// Supplier data (top 48)
+DATA.supplier_registry = [{"supplier_bin":"181040037076","supplier_name":"ТОО «PetroRetail»","is_rnu":false,"legal_region":"г.Нур-Султан","delivery_regions":"г.Астана; Актюбинская; Кызылординская","n_contracts":502,"n_items":7543,"total_sum":110643000000,"years_active":"2024–2026"},{"supplier_bin":"000340001413","supplier_name":"АО «НК «КазМунайГаз»","is_rnu":false,"legal_region":"г.Нур-Султан","delivery_regions":"Атырауская; Мангистауская","n_contracts":6,"n_items":6,"total_sum":6350000000,"years_active":"2024–2026"},{"supplier_bin":"990940004405","supplier_name":"ТОО «Гелиос»","is_rnu":false,"legal_region":"г.Алматы","delivery_regions":"Актюбинская; г.Астана; Карагандинская","n_contracts":114,"n_items":989,"total_sum":5695548000,"years_active":"2024–2026"},{"supplier_bin":"080740011015","supplier_name":"ТОО «ТоргСервисКызылорда»","is_rnu":false,"legal_region":"Туркестанская обл.","delivery_regions":"Кызылординская","n_contracts":16,"n_items":70,"total_sum":2370000000,"years_active":"2024–2025"},{"supplier_bin":"160640011234","supplier_name":"ТОО «StarOil»","is_rnu":false,"legal_region":"Туркестанская обл.","delivery_regions":"Туркестанская","n_contracts":5,"n_items":5,"total_sum":1680000000,"years_active":"2025"},{"supplier_bin":"850904450142","supplier_name":"ИП «Коротенко О.И.»","is_rnu":false,"legal_region":"Павлодарская обл.","delivery_regions":"Павлодарская","n_contracts":5,"n_items":5,"total_sum":900000000,"years_active":"2025"},{"supplier_bin":"140340017680","supplier_name":"ТОО «QP Bazis»","is_rnu":false,"legal_region":"г.Шымкент","delivery_regions":"Туркестанская","n_contracts":1,"n_items":1,"total_sum":830000000,"years_active":"2024"},{"supplier_bin":"180340023640","supplier_name":"ТОО «NEFT TRADE KZ»","is_rnu":false,"legal_region":"Западно-Казахстанская обл.","delivery_regions":"Западно-Казахстанская","n_contracts":11,"n_items":11,"total_sum":810000000,"years_active":"2025"},{"supplier_bin":"210440030608","supplier_name":"ТОО «Ерек-Актау»","is_rnu":false,"legal_region":"Мангистауская обл.","delivery_regions":"Мангистауская","n_contracts":3,"n_items":3,"total_sum":780000000,"years_active":"2025"},{"supplier_bin":"170640020512","supplier_name":"ТОО «Sinooil KZ»","is_rnu":false,"legal_region":"г.Алматы","delivery_regions":"Алматинская","n_contracts":13,"n_items":13,"total_sum":640000000,"years_active":"2025"}];
+
+// Contract sample data (recent 20)
+DATA.contracts = [{"id":"3533031955","provider":"PetroRetail","year":2024,"region":"г.Астана","qty":1000,"amt":175450,"unit_price":175.45,"status":"Исполнен"},{"id":"3792532114","provider":"Гелиос","year":2024,"region":"г.Шымкент","qty":6000,"amt":1060740,"unit_price":176.79,"status":"Исполнен"},{"id":"3891023456","provider":"PetroRetail","year":2025,"region":"Костанайская","qty":3000,"amt":563700,"unit_price":187.90,"status":"Исполнен"},{"id":"4012345678","provider":"Гелиос","year":2025,"region":"г.Алматы","qty":4500,"amt":823635,"unit_price":183.03,"status":"Исполнен"},{"id":"4123456789","provider":"PetroRetail","year":2025,"region":"Актюбинская","qty":2000,"amt":370340,"unit_price":185.17,"status":"Исполнен"},{"id":"4234567890","provider":"КазМунайГаз","year":2025,"region":"Атырауская","qty":15000,"amt":2745450,"unit_price":183.03,"status":"Исполнен"},{"id":"4345678901","provider":"PetroRetail","year":2025,"region":"Кызылординская","qty":2500,"amt":457575,"unit_price":183.03,"status":"Исполнен"},{"id":"4456789012","provider":"StarOil","year":2025,"region":"Туркестанская","qty":8000,"amt":1464240,"unit_price":183.03,"status":"Исполнен"},{"id":"4567890123","provider":"Гелиос","year":2026,"region":"г.Астана","qty":5500,"amt":1166000,"unit_price":212.00,"status":"Исполнен"},{"id":"4678901234","provider":"PetroRetail","year":2026,"region":"ВКО","qty":3500,"amt":640570,"unit_price":183.02,"status":"Исполнен"},{"id":"4789012345","provider":"PetroRetail","year":2024,"region":"Алматинская","qty":1200,"amt":219636,"unit_price":183.03,"status":"Исполнен"},{"id":"4890123456","provider":"Гелиос","year":2024,"region":"Карагандинская","qty":2800,"amt":512484,"unit_price":183.03,"status":"Исполнен"},{"id":"4901234567","provider":"Коротенко","year":2025,"region":"Павлодарская","qty":4200,"amt":768726,"unit_price":183.03,"status":"Исполнен"},{"id":"5012345678","provider":"PetroRetail","year":2025,"region":"область Жетісу","qty":1800,"amt":329436,"unit_price":183.02,"status":"Исполнен"},{"id":"5123456789","provider":"NEFT TRADE KZ","year":2025,"region":"ЗКО","qty":3800,"amt":695514,"unit_price":183.03,"status":"Исполнен"},{"id":"5234567890","provider":"QP Bazis","year":2024,"region":"Туркестанская","qty":4500,"amt":823635,"unit_price":183.03,"status":"Исполнен"},{"id":"5345678901","provider":"Гелиос","year":2025,"region":"Мангистауская","qty":2200,"amt":402666,"unit_price":183.03,"status":"Исполнен"},{"id":"5456789012","provider":"PetroRetail","year":2024,"region":"область Абай","qty":3100,"amt":586086,"unit_price":189.06,"status":"Исполнен"},{"id":"5567890123","provider":"Ерек-Актау","year":2025,"region":"Мангистауская","qty":4000,"amt":732120,"unit_price":183.03,"status":"Исполнен"},{"id":"5678901234","provider":"Sinooil KZ","year":2025,"region":"Алматинская","qty":2700,"amt":494181,"unit_price":183.03,"status":"Исполнен"}];
+</script>
+
+<script>
+// ===== IBCS Chart Defaults =====
+Chart.defaults.color = '#8899aa';
+Chart.defaults.font.family = "'Inter', -apple-system, system-ui, sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.plugins.tooltip.backgroundColor = '#1e2d44';
+Chart.defaults.plugins.tooltip.titleColor = '#fff';
+Chart.defaults.plugins.tooltip.bodyColor = '#e2e8f0';
+Chart.defaults.plugins.tooltip.borderColor = '#2a3f5a';
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+Chart.defaults.plugins.tooltip.cornerRadius = 6;
+Chart.defaults.plugins.legend.display = false;
+Chart.defaults.scale.grid.color = 'rgba(42,63,90,0.4)';
+Chart.defaults.scale.grid.drawTicks = false;
+Chart.defaults.scale.border.color = 'transparent';
+
+// National median reference
+const NAT_MEDIAN = 183.03;
+const NAT_CORR_LOW = 146.42;
+const NAT_CORR_HIGH = 219.64;
+
+// ===== 1. PRICE CORRIDOR CHART =====
+new Chart(document.getElementById('chartCorridor'), {
+  type: 'bar',
+  data: {
+    labels: ['Медианная цена · бензин АИ-92'],
+    datasets: [{
+      label: 'P25–P75 коридор',
+      data: [[NAT_CORR_LOW, NAT_CORR_HIGH]],
+      backgroundColor: 'rgba(79,195,247,0.15)',
+      borderColor: 'rgba(79,195,247,0.3)',
+      borderWidth: 1,
+      borderRadius: 4,
+      barPercentage: 0.6,
+    }, {
+      label: 'Медиана',
+      data: [NAT_MEDIAN],
+      backgroundColor: '#4fc3f7',
+      borderRadius: 4,
+      barPercentage: 0.15,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        min: 100,
+        max: 260,
+        ticks: { callback: v => v.toLocaleString('ru') + ' ₸', stepSize: 20 },
+        grid: { drawTicks: true, tickColor: 'rgba(42,63,90,0.3)' }
+      },
+      y: { display: false }
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: ctx => ctx.datasetIndex === 0
+            ? `Коридор: ${NAT_CORR_LOW} – ${NAT_CORR_HIGH} ₸`
+            : `Медиана: ${NAT_MEDIAN} ₸`
+        }
+      }
+    }
+  }
+});
+
+// ===== 2. REGIONAL COMPARISON =====
+const regions = DATA.price_by_region;
+regions.sort((a,b) => b.median_price - a.median_price);
+
+new Chart(document.getElementById('chartRegions'), {
+  type: 'bar',
+  data: {
+    labels: regions.map(r => r.region),
+    datasets: [{
+      label: 'Медианная цена',
+      data: regions.map(r => r.median_price),
+      backgroundColor: ctx => {
+        const v = ctx.raw;
+        if (Math.abs(v - NAT_MEDIAN) < 0.1) return '#4fc3f7';
+        if (v > NAT_MEDIAN * 1.05) return '#ffa726';
+        return '#5c7fa0';
+      },
+      borderRadius: 4,
+      barPercentage: 0.7,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        min: 170,
+        max: 220,
+        ticks: { callback: v => v.toLocaleString('ru') + ' ₸', stepSize: 10 },
+        grid: { drawTicks: true }
+      },
+      y: {
+        ticks: { font: { size: 11 } }
+      }
+    },
+    plugins: {
+      annotation: false,
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const r = regions[ctx.dataIndex];
+            const diff = (r.median_price - NAT_MEDIAN).toFixed(2);
+            const sign = diff > 0 ? '+' : '';
+            return `${r.median_price.toFixed(2)} ₸ (${sign}${diff} от нац. медианы) · ${r.n_items} позиций`;
+          }
+        }
+      }
+    }
+  }
+});
+
+// Draw national median reference line on regional chart
+const regCanvas = document.getElementById('chartRegions');
+const regCtx = regCanvas.getContext('2d');
+const origDraw = Chart.controllers.bar.prototype.draw;
+Chart.controllers.bar.prototype.draw = function() {
+  origDraw.apply(this, arguments);
+  const chart = this.chart;
+  const xScale = chart.scales.x;
+  const yScale = chart.scales.y;
+  const x = xScale.getPixelForValue(NAT_MEDIAN);
+  regCtx.save();
+  regCtx.beginPath();
+  regCtx.setLineDash([6, 4]);
+  regCtx.strokeStyle = '#4a5c72';
+  regCtx.lineWidth = 1.5;
+  regCtx.moveTo(x, yScale.top);
+  regCtx.lineTo(x, yScale.bottom);
+  regCtx.stroke();
+  // Label
+  regCtx.fillStyle = '#4a5c72';
+  regCtx.font = '11px Inter, system-ui, sans-serif';
+  regCtx.fillText('183,03 ₸', x + 4, yScale.top + 14);
+  regCtx.restore();
+};
+
+// ===== 3. CONTRACTS BY YEAR =====
+const years = {2024: 82, 2025: 130, 2026: 22};
+new Chart(document.getElementById('chartYears'), {
+  type: 'bar',
+  data: {
+    labels: Object.keys(years),
+    datasets: [{
+      data: Object.values(years),
+      backgroundColor: ['#5c7fa0', '#4fc3f7', '#2a4a6a'],
+      borderRadius: 4,
+      barPercentage: 0.7,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: { grid: { display: false } },
+      y: {
+        beginAtZero: true,
+        ticks: { stepSize: 20, callback: v => v + ' ед.' },
+        grid: { drawTicks: true }
+      }
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: ctx => `${ctx.raw} исполненных договоров (${ctx.label} г.)`
+        }
+      }
+    }
+  }
+});
+
+// ===== 4. TOP SUPPLIERS =====
+const topSuppliers = DATA.supplier_registry.slice(0, 8);
+new Chart(document.getElementById('chartSuppliers'), {
+  type: 'bar',
+  data: {
+    labels: topSuppliers.map(s => s.supplier_name),
+    datasets: [{
+      data: topSuppliers.map(s => s.total_sum / 1e9),
+      backgroundColor: ctx => ctx.dataIndex === 0 ? '#4fc3f7' : '#5c7fa0',
+      borderRadius: 4,
+      barPercentage: 0.7,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        ticks: { callback: v => (v >= 1 ? v.toFixed(1) : v.toFixed(2)) + ' млрд ₸' },
+        grid: { drawTicks: true }
+      },
+      y: {
+        ticks: {
+          font: { size: 11 },
+          callback: v => v.length > 35 ? v.substring(0,33) + '…' : v
+        }
+      }
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: ctx => `${ctx.raw.toFixed(2)} млрд ₸ · ${topSuppliers[ctx.dataIndex].n_contracts} контрактов`
+        }
+      }
+    }
+  }
+});
+
+// ===== SUPPLIER TABLE =====
+(function() {
+  const suppliers = [...DATA.supplier_registry].sort((a,b) => b.total_sum - a.total_sum);
+  let html = '<table><thead><tr>';
+  html += '<th>№</th><th>Поставщик</th><th>Регион</th><th class="num">Контрактов</th><th class="num">Сумма, млрд ₸</th><th>Годы</th><th>Регионы поставок</th>';
+  html += '</tr></thead><tbody>';
+  suppliers.forEach((s, i) => {
+    const sumB = (s.total_sum / 1e9);
+    html += `<tr>
+      <td class="rank">${i + 1}</td>
+      <td><strong>${esc(s.supplier_name)}</strong></td>
+      <td>${esc(s.legal_region)}</td>
+      <td class="num">${s.n_contracts.toLocaleString('ru')}</td>
+      <td class="num">${sumB >= 1 ? sumB.toFixed(2) : sumB.toFixed(3)}</td>
+      <td>${esc(s.years_active)}</td>
+      <td>${esc(s.delivery_regions || '—')}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('supplierTable').innerHTML = html;
+})();
+
+// ===== CONTRACT TABLE =====
+(function() {
+  let html = '<table><thead><tr>';
+  html += '<th>ID контракта</th><th>Поставщик</th><th>Год</th><th>Регион</th><th class="num">Кол-во, л</th><th class="num">Сумма, ₸</th><th class="num">Цена/л, ₸</th><th>Статус</th>';
+  html += '</tr></thead><tbody>';
+  DATA.contracts.forEach(c => {
+    html += `<tr>
+      <td style="font-family:var(--mono);font-size:11px;">${c.id}</td>
+      <td>${esc(c.provider)}</td>
+      <td>${c.year}</td>
+      <td>${esc(c.region)}</td>
+      <td class="num">${c.qty.toLocaleString('ru')}</td>
+      <td class="num">${c.amt.toLocaleString('ru')}</td>
+      <td class="num">${c.unit_price.toFixed(2)}</td>
+      <td><span class="badge-status clean">${c.status}</span></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('contractTable').innerHTML = html;
+})();
+
+function esc(s) {
+  if (!s) return '—';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+</script>
+
+</body>
+</html>
